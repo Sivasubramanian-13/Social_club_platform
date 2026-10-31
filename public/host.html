@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Event Participants</title>
+    <script>
+        // Fetch participants from the backend
+        window.onload = function() {
+            fetch('/participants')
+                .then(response => response.json())  // Expecting JSON response
+                .then(data => {
+                    const tableBody = document.getElementById('participantsTableBody');
+                    if (data.length === 0) {
+                         // If o participants, show a message
+                        tableBody.innerHTML = "<tr><td colspan='5'>No participants found.</td></tr>";
+                        return;
+                    }
+
+                    data.forEach(participant => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${participant.name}</td>
+                            <td>${participant.age}</td>
+                            <td>${participant.phone}</td>
+                            <td>${participant.city}</td>
+                            <td>
+                                <form action="/delete/${participant.id}" method="POST" style="display:inline;">
+                                    <button type="submit">Delete</button>
+                                </form>
+                                <form action="/update/${participant.id}" method="POST" style="display:inline;">
+                                    <input type="text" name="name" placeholder="New name" required>
+                                    <input type="number" name="age" placeholder="New age" required>
+                                    <input type="text" name="phone" placeholder="New phone" required>
+                                    <input type="text" name="city" placeholder="New city" required>
+                                    <button type="submit">Update</button>
+                                </form>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch((err) => {
+                    console.error('Error fetching participants:', err);
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Manage Social Club Participants</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="participantsTableBody">
+            <!-- Participants will be populated here dynamically -->
+        </tbody>
+    </table>
+</body>
+</html>
